@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Receipts to Sheets</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.2rem;
+    }
+    p {
+      margin-top: 0;
+      color: #555;
+    }
+    form {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+    }
+    input[type="file"], button {
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+    button {
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #333;
+    }
+    .footer {
+      margin-top: 2rem;
+      color: #888;
+      font-size: 0.9rem;
+    }
+    .results {
+      margin-top: 2rem;
+      max-width: 700px;
+      width: 100%;
+      font-size: 0.95rem;
+    }
+    .results table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .results th, .results td {
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    .results th {
+      background-color: #f0f0f0;
+    }
+    .info-note {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 1rem;
+    }
+    .flash {
+      background: #fce4e4;
+      color: #a33;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      background: rgba(255,255,255,0.8);
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading-overlay">Processing receipt...</div>
+
+  <h1>Receipts to Sheets</h1>
+  <p>📸 Upload one receipt to extract clean spreadsheet data</p>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="flash">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="/upload" enctype="multipart/form-data" onsubmit="showLoading()">
+    <input type="file" name="receipt" accept="image/*,.pdf" required>
+    <button type="submit">Process Receipt</button>
+  </form>
+
+  <!-- ⬇ now appears below the form, not hidden -->
+  <p class="info-note">
+    ℹ️ For testing, only one receipt may be uploaded at a time. Max file size: 2MB.
+  </p>
+
+  <div class="results">
+    <h3>Sample Output Preview:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Vendor</th>
+          <th>VAT Number</th>
+          <th>VAT</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2024-08-31</td><td>Brentwood Park</td><td>4900258591</td><td>72.55</td><td>557.20</td></tr>
+        <tr><td>2022-04-27</td><td>The Greek Fisherman</td><td>4928894725</td><td>78.00</td><td>520.00</td></tr>
+        <tr><td>2016-01-23</td><td>Royal Coachman</td><td>4208894425</td><td>0.00</td><td>367.00</td></tr>
+        <tr><td>2023-09-19</td><td>Simply Asia</td><td>4028897725</td><td>59.09</td><td>453.00</td></tr>
+        <tr><td>2023-08-14</td><td>Mama Mexicana</td><td>Pending</td><td>Null</td><td>289.00</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    Built by You · <a href="#">Feedback</a> · <a href="#">Privacy</a>
+  </div>
+
+  <script>
+    function showLoading() {
+      document.getElementById("loading-overlay").style.display = "flex";
+    }
+  </script>
+
+</body>
+</html>
